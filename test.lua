@@ -9,81 +9,8 @@ end
 
 warn("------------------------------------------------------------------")
 
--- ฟังก์ชันส่ง Webhook เมื่อมีคนซื้อของ
-local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
 
-local function sendWebhook(buyer, itemName, price)
-	local url = getgenv().Settings.WebhookURL
-	if not url or url == "" then
-		warn("❌ Webhook URL không được thiết lập")
-		return
-	end
-
-	local data = {
-		["content"] = nil,
-		["embeds"] = {{
-			["title"] = "💰 Item Sold!",
-			["description"] = "**" .. buyer .. "** bought **" .. itemName .. "** for **" .. tostring(price) .. "** diamonds.",
-			["color"] = 65280,
-			["footer"] = {
-				["text"] = os.date("Sold at %H:%M:%S")
-			}
-		}}
-	}
-
-	local jsonData = HttpService:JSONEncode(data)
-
-	local success, response = pcall(function()
-		if syn and syn.request then
-			return syn.request({
-				Url = url,
-				Method = "POST",
-				Headers = {
-					["Content-Type"] = "application/json"
-				},
-				Body = jsonData
-			})
-		elseif request then
-			return request({
-				Url = url,
-				Method = "POST",
-				Headers = {
-					["Content-Type"] = "application/json"
-				},
-				Body = jsonData
-			})
-		end
-	end)
-
-	if success then
-		warn("✅ Webhook sent for buyer: " .. buyer)
-	else
-		warn("❌ Failed to send webhook:", response)
-	end
-end
-
--- เชื่อมต่อ Event Booths_ItemBought
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-ReplicatedStorage.Network.Booths_ItemBought.OnClientEvent:Connect(function(buyerUserId, listingData)
-	local success, buyerName = pcall(function()
-		return Players:GetNameFromUserIdAsync(buyerUserId)
-	end)
-	if not success then
-		buyerName = "Unknown"
-	end
-
-	local itemName = listingData.itemData.id or "Unknown Item"
-	local price = listingData.diamonds or 0
-
-	sendWebhook(buyerName, itemName, price)
-end)
-
-if game.PlaceId == 15502339080 or game.PlaceId == 15588442388 then
-
-else
-
+if game.PlaceId ~= 15502339080 then
 	local TeleportService = game:GetService("TeleportService")
 	local placeId = 15502339080
 	TeleportService:Teleport(placeId, game.Players.LocalPlayer)
