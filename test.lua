@@ -9,60 +9,6 @@ end
 
 warn("------------------------------------------------------------------")
 
--- ฟังก์ชันส่ง Webhook เมื่อมีคนซื้อของ
-local HttpService = game:GetService("HttpService")
-local Players = game:GetService("Players")
-
-local function sendWebhook(buyer, itemName, price)
-	local url = getgenv().Settings.WebhookURL
-	if not url or url == "" then
-		warn("❌ Webhook URL không được thiết lập")
-		return
-	end
-
-	local data = {
-		["content"] = nil,
-		["embeds"] = {{
-			["title"] = "💰 Item Sold!",
-			["description"] = "**" .. buyer .. "** bought **" .. itemName .. "** for **" .. tostring(price) .. "** diamonds.",
-			["color"] = 65280,
-			["footer"] = {
-				["text"] = os.date("Sold at %H:%M:%S")
-			}
-		}}
-	}
-
-	local jsonData = HttpService:JSONEncode(data)
-
-	local success, response = pcall(function()
-		if syn and syn.request then
-			return syn.request({
-				Url = url,
-				Method = "POST",
-				Headers = {
-					["Content-Type"] = "application/json"
-				},
-				Body = jsonData
-			})
-		elseif request then
-			return request({
-				Url = url,
-				Method = "POST",
-				Headers = {
-					["Content-Type"] = "application/json"
-				},
-				Body = jsonData
-			})
-		end
-	end)
-
-	if success then
-		warn("✅ Webhook sent for buyer: " .. buyer)
-	else
-		warn("❌ Failed to send webhook:", response)
-	end
-end
-
 -- เชื่อมต่อ Event Booths_ItemBought
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -1311,3 +1257,57 @@ VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
 
 
 sell_all_items()
+
+-- ฟังก์ชันส่ง Webhook เมื่อมีคนซื้อของ
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+
+local function sendWebhook(buyer, itemName, price)
+	local url = getgenv().Settings.WebhookURL
+	if not url or url == "" then
+		warn("❌ Webhook URL không được thiết lập")
+		return
+	end
+
+	local data = {
+		["content"] = nil,
+		["embeds"] = {{
+			["title"] = "💰 Item Sold!",
+			["description"] = "**" .. buyer .. "** bought **" .. itemName .. "** for **" .. tostring(price) .. "** diamonds.",
+			["color"] = 65280,
+			["footer"] = {
+				["text"] = os.date("Sold at %H:%M:%S")
+			}
+		}}
+	}
+
+	local jsonData = HttpService:JSONEncode(data)
+
+	local success, response = pcall(function()
+		if syn and syn.request then
+			return syn.request({
+				Url = url,
+				Method = "POST",
+				Headers = {
+					["Content-Type"] = "application/json"
+				},
+				Body = jsonData
+			})
+		elseif request then
+			return request({
+				Url = url,
+				Method = "POST",
+				Headers = {
+					["Content-Type"] = "application/json"
+				},
+				Body = jsonData
+			})
+		end
+	end)
+
+	if success then
+		warn("✅ Webhook sent for buyer: " .. buyer)
+	else
+		warn("❌ Failed to send webhook:", response)
+	end
+end
