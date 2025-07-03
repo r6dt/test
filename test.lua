@@ -10,7 +10,10 @@ end
 warn("------------------------------------------------------------------")
 
 
-if game.PlaceId ~= 15502339080 then
+if game.PlaceId == 15502339080 or game.PlaceId == 15588442388 then
+
+else
+
 	local TeleportService = game:GetService("TeleportService")
 	local placeId = 15502339080
 	TeleportService:Teleport(placeId, game.Players.LocalPlayer)
