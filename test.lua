@@ -1241,3 +1241,88 @@ VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.E, false, game)
 
 
 sell_all_items()
+
+
+
+-- แทรกจุดส่ง Webhook และลด Amount ลงเมื่อขายสำเร็จจริง
+-- นำไปใช้ร่วมกับ Settings ที่มี WebhookURL และ Items[itemName].Amount
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+
+local function sendWebhook(buyer, itemName, price)
+	local url = getgenv().Settings.WebhookURL
+	if not url or url == "" then
+		warn("❌ Webhook URL không được thiết lập")
+		return
+	end
+
+	local data = {
+		embeds = {{
+			title = "💰 Item Sold!",
+			description = "**" .. buyer .. "** bought **" .. itemName .. "** for **" .. tostring(price) .. "** diamonds.",
+			color = 65280,
+			footer = { text = os.date("Sold at %H:%M:%S") }
+		}}
+	}
+
+	local success, response = pcall(function()
+		if syn and syn.request then
+			return syn.request({
+				Url = url,
+				Method = "POST",
+				Headers = { ["Content-Type"] = "application/json" },
+				Body = HttpService:JSONEncode(data)
+			})
+		elseif request then
+			return request({
+				Url = url,
+				Method = "POST",
+				Headers = { ["Content-Type"] = "application/json" },
+				Body = HttpService:JSONEncode(data)
+			})
+		end
+	end)
+
+	if success then
+		warn("✅ Webhook sent for buyer: " .. buyer)
+	else
+		warn("❌ Webhook send failed:", response)
+	end
+end
+
+-- ฟัง Event การขายที่บูธ
+ReplicatedStorage.Network.Booths_ItemBought.OnClientEvent:Connect(function(buyerUserId, listingData)
+	local buyerName = "Unknown"
+	pcall(function()
+		buyerName = Players:GetNameFromUserIdAsync(buyerUserId)
+	end)
+
+	local itemName = listingData.itemData.id or "Unknown Item"
+	local price = listingData.diamonds or 0
+
+	sendWebhook(buyerName, itemName, price)
+
+	-- ลด Amount ถ้ามีใน Settings
+	if getgenv().Settings and getgenv().Settings.Items and getgenv().Settings.Items[itemName] then
+		local item = getgenv().Settings.Items[itemName]
+		if item.Amount and type(item.Amount) == "number" then
+			item.Amount = item.Amount - 1
+			warn("📉 Amount for " .. itemName .. " reduced to " .. tostring(item.Amount))
+			if item.Amount <= 0 then
+				warn("🛑 Amount for " .. itemName .. " reached 0. Removing from list.")
+				getgenv().Settings.Items[itemName] = nil
+			end
+		end
+	end
+end)
+
+-- เพิ่มใน Settings ก่อนเรียกใช้:
+-- getgenv().Settings = {
+--     WebhookURL = "https://discord.com/api/webhooks/...",
+--     Items = {
+--         ["Huge Dragon"] = { Price = "25b", Amount = 3, Priority = true },
+--         ...
+--     }
+-- }
