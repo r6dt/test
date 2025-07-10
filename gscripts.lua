@@ -30,7 +30,7 @@ getgenv().GWAIT_AT_GATES_TILL_RANK = 5
 
 getgenv().GMAX_ZONE_UPGRADE_COST = 200000
 getgenv().GUSE_ULTIMATES = {"Tsunami", "Tornado", "Pet Surge", "Chest Spell","Ground Pound"}
-getgenv().GUSE_FLAGS = {"Fortune Flag","Diamonds Flag","Coins Flag"}
+getgenv().GUSE_FLAGS = {"Hasty Flag"}
 getgenv().GPOTIONS = {"Coins","Lucky","Treasure Hunter","Walkspeed","Diamonds","Damage"}
 -- getgenv().GENCHANTS = {"Criticals","Treasure Hunter","Diamonds","Lucky Eggs","Huge Hunter","Tap Power","Strong Pets"}
 getgenv().GCOLLECT_FREE_ITEMS = true
