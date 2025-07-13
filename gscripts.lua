@@ -1,17 +1,6 @@
 getgenv().GRANK_FIRST = true
 getgenv().GEVENT_FPS = 5
 getgenv().GMAX_MAIL_COST = "1m"
-getgenv().GUSE_BOOSTS = true
-
-getgenv().GHATCH_CHARGED_EGGS = false
-getgenv().GDO_GYM_EVENT = true
-getgenv().GGYM_EVENT_STOP_AFTER_BENCH = 20
-getgenv().GGYM_EVENT_STAT_CONFIG = {
-    ["Stamina"] = 0,
-    ["CritChance"] = 0,
-    ["Strength"] = 100,
-    ["Size"] = 1
-}
 
 getgenv().GENCHANTS = {
     "Lucky Eggs", "Lucky Eggs", "Lucky Eggs", "Lucky Eggs",
