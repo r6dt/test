@@ -2,11 +2,6 @@ getgenv().GRANK_FIRST = true
 getgenv().GEVENT_FPS = 5
 getgenv().GMAX_MAIL_COST = "1m"
 
-getgenv().GENCHANTS = {
-    "Lucky Eggs", "Lucky Eggs", "Lucky Eggs", "Lucky Eggs",
-    "Lucky Eggs", "Lucky Eggs", "Lucky Eggs", "Lucky Eggs",
-    "Lucky Eggs", "Lucky Eggs", "Lucky Eggs"
-    } -- apparently others dont work
 getgenv().GAUTO_UPGRADE_PETS = true
 getgenv().GLOOTBOXES = {"All"}
 getgenv().GCLEAR_FAVORITE_PETS = true
@@ -21,7 +16,7 @@ getgenv().GMAX_ZONE_UPGRADE_COST = 200000
 getgenv().GUSE_ULTIMATES = {"Tsunami", "Tornado", "Pet Surge", "Chest Spell","Ground Pound"}
 getgenv().GUSE_FLAGS = {"Hasty Flag"}
 getgenv().GPOTIONS = {"Coins","Lucky","Treasure Hunter","Walkspeed","Diamonds","Damage"}
--- getgenv().GENCHANTS = {"Criticals","Treasure Hunter","Diamonds","Lucky Eggs","Huge Hunter","Tap Power","Strong Pets"}
+getgenv().GENCHANTS = {"Criticals","Treasure Hunter","Diamonds","Lucky Eggs","Huge Hunter","Tap Power","Strong Pets"}
 getgenv().GCOLLECT_FREE_ITEMS = true
 getgenv().GPOTIONS_MAX_TIER = 99
 
