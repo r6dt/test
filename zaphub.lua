@@ -45,3 +45,4 @@ _G.ZapSettings = {
 ["PetSimulator99 - PotionTableMultiDropdown"] = {"Coins", "Damage", "Diamonds", "Treasure Hunter"}, -- Options = {"Coins", "Damage", "Diamonds", "Treasure Hunter", "Walkspeed", "Lucky", "Huge"}
 ["PetSimulator99 - AutoUsePotionToggle"] = true
 }
+loadstring(game:HttpGet('https://zaphub.xyz/Exec'))()
