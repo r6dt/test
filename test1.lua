@@ -895,10 +895,8 @@ local function sell_item(itemName)
     end
 
 
-	if string.find(itemName, "All Huges") then
-
+if string.find(itemName, "All Huges") then
     local itemName, SH_find, PT_find = Kiem_tra_ten_co_them_tu_la_(itemName)
-
     local SaveData = require(ReplicatedStorage.Library.Client.Save).Get()
     local Manager = {}
 
@@ -907,13 +905,10 @@ local function sell_item(itemName)
         for uid, v in pairs(SaveData.Inventory.Pet) do
             if string.find(v.id, "Huge") then
                 local ok = true
-
                 if PT_find ~= nil and v.pt ~= PT_find then ok = false end
                 if PT_find == nil and (v.pt == 1 or v.pt == 2) then ok = false end
-
                 if SH_find == true and v.sh == nil then ok = false end
                 if SH_find == nil and v.sh == true then ok = false end
-
                 if ok then
                     table.insert(Huges, {
                         UID = uid,
@@ -927,86 +922,95 @@ local function sell_item(itemName)
         return Huges
     end
 
-local hugesList = Manager:GetPets()
-local count_listed = 0
-local Max_listings = item.Max_listings or math.huge
+    local hugesList = Manager:GetPets()
+    if #hugesList == 0 then
+        warn("Khong tim thay pet co ID chua 'Huge'")
+    else
+        local savedList_price_all = {}
+        local sold_by_convention = item.sold_by_convention
+        local count_listed = 0
+        local Max_listings = item.Max_listings or math.huge
 
-if #hugesList == 0 then
-    warn("Khong tim thay pet co ID chua \"Huge\")
-else
-    local savedList_price_all = {}
-    local sold_by_convention = item.sold_by_convention
+        for _, info in ipairs(hugesList) do
+            if count_listed >= Max_listings then
+                warn("🛑 Đạt giới hạn Max_listings: " .. tostring(Max_listings))
+                break
+            end
 
-    for _, info in ipairs(hugesList) do
-        if count_listed >= Max_listings then
-            warn("🛑 Đạt giới hạn Max_listings: " .. tostring(Max_listings))
-            break
-        end
+            local val1 = findValueByFields("Pet", info.ID, info.PT, info.SH, nil)
+            local valFinal = val1 or 0
+            local priceRaw = item.Price
+            local Min_sell = item.Min_sell
+            local Max_sell = item.Max_sell
 
-        local val1 = findValueByFields("Pet", info.ID, info.PT, info.SH, nil)
-        if val1 then warn("Pet " .. info.ID .. " co value = " .. tostring(val1)) end
-
-        -- Xử lý giáขาย
-        local valFinal = val1
-        local priceRaw = item.Price
-        local Min_sell = item.Min_sell
-        local Max_sell = item.Max_sell
-
-        if type(priceRaw) == "number" then
-            valFinal = priceRaw
-        elseif type(priceRaw) == "string" then
-            local percentMatch = priceRaw:match("^[+%-%d%.]+%%$")
-            if percentMatch then
-                local sign = priceRaw:sub(1,1)
-                local numberPart = tonumber(priceRaw:match("[%d%.]+"))
-                if sign == "+" then
-                    valFinal = valFinal + (valFinal * numberPart / 100)
+            if type(priceRaw) == "number" then
+                valFinal = priceRaw
+            elseif type(priceRaw) == "string" then
+                local percentMatch = priceRaw:match("^[+%-]?[%d%.]+%%$")
+                if percentMatch then
+                    local sign = priceRaw:sub(1,1)
+                    local numberPart = tonumber(priceRaw:match("[%d%.]+"))
+                    if sign == "+" then
+                        valFinal = valFinal + (valFinal * numberPart / 100)
+                    else
+                        valFinal = valFinal - (valFinal * numberPart / 100)
+                    end
+                    valFinal = math.floor(valFinal)
                 else
-                    valFinal = valFinal - (valFinal * numberPart / 100)
+                    local converted = convertStringPriceToNumber(priceRaw)
+                    if converted then valFinal = converted end
                 end
-                valFinal = math.floor(valFinal)
+            end
+
+            if Min_sell then
+                Min_sell = convertStringPriceToNumber(Min_sell)
+                if Min_sell > valFinal then valFinal = Min_sell end
+            end
+            if Max_sell then
+                Max_sell = convertStringPriceToNumber(Max_sell)
+                if Max_sell < valFinal then valFinal = Max_sell end
+            end
+
+            if sold_by_convention then
+                table.insert(savedList_price_all, {UID_sell = info.UID, valFinal_sell = valFinal})
             else
-                local converted = convertStringPriceToNumber(priceRaw)
-                if converted then valFinal = converted end
+                local ohString1 = tostring(info.UID)
+                local ohNumber2 = valFinal or 0
+                task.wait(1)
+                game:GetService("ReplicatedStorage").Network.Booths_CreateListing:InvokeServer(
+                    ohString1,
+                    ohNumber2,
+                    1
+                )
+                task.wait(2)
+                count_listed += 1
             end
         end
 
-        if Min_sell then
-            Min_sell = convertStringPriceToNumber(Min_sell)
-            if Min_sell > valFinal then valFinal = Min_sell end
-        end
-        if Max_sell then
-            Max_sell = convertStringPriceToNumber(Max_sell)
-            if Max_sell < valFinal then valFinal = Max_sell end
-        end
-
-        local ohString1 = tostring(info.UID)
-        local ohNumber2 = valFinal or 0
-        local ohNumber3 = 1
-        task.wait(1)
-        game:GetService("ReplicatedStorage").Network.Booths_CreateListing:InvokeServer(
-            ohString1,
-            ohNumber2,
-            ohNumber3
-        )
-        warn("📤 Đã treo pet " .. info.ID .. " giá " .. tostring(ohNumber2))
-        task.wait(2)
-
-        count_listed += 1
-        Tong_item_da_treo_quay += 1
-        if Tong_item_da_treo_quay == 25 then
-            while true do
-                local X_slot = kiemtra_quayconslottreo()
-                warn("slot : " .. X_slot)
-                if X_slot < 25 then
-                    Tong_item_da_treo_quay = X_slot
+        if sold_by_convention then
+            table.sort(savedList_price_all, function(a, b)
+                return a.valFinal_sell < b.valFinal_sell
+            end)
+            for _, data in ipairs(savedList_price_all) do
+                if count_listed >= Max_listings then
+                    warn("🛑 Đạt giới hạn Max_listings khi sold_by_convention: " .. tostring(Max_listings))
                     break
                 end
-                task.wait(60)
+                local ohString1 = data.UID_sell
+                local ohNumber2 = data.valFinal_sell
+                task.wait(1)
+                game:GetService("ReplicatedStorage").Network.Booths_CreateListing:InvokeServer(
+                    ohString1,
+                    ohNumber2,
+                    1
+                )
+                task.wait(2)
+                count_listed += 1
             end
         end
     end
 end
+
 			-- sau vòng for
 			if sold_by_convention == true then
 				warn("sap xep lai thap den cao")
