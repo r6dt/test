@@ -927,76 +927,82 @@ local function sell_item(itemName)
         return Huges
     end
 
-    local hugesList = Manager:GetPets()
-    if #hugesList == 0 then
-        warn("Khong tim thay pet co ID chua \"Huge\")
-    else
+local hugesList = Manager:GetPets()
+local count_listed = 0
+local Max_listings = item.Max_listings or math.huge
 
-        local savedList_price_all = {}
-        local sold_by_convention = item.sold_by_convention
+if #hugesList == 0 then
+    warn("Khong tim thay pet co ID chua \"Huge\")
+else
+    local savedList_price_all = {}
+    local sold_by_convention = item.sold_by_convention
 
-        local count_listed = 0
-        local Max_listings = item.Max_listings or math.huge
+    for _, info in ipairs(hugesList) do
+        if count_listed >= Max_listings then
+            warn("🛑 Đạt giới hạn Max_listings: " .. tostring(Max_listings))
+            break
+        end
 
-        for _, info in ipairs(hugesList) do
-            if count_listed >= Max_listings then
-                warn("🛑 Da dat gioi han ban: " .. tostring(Max_listings))
-                break
-            end
+        local val1 = findValueByFields("Pet", info.ID, info.PT, info.SH, nil)
+        if val1 then warn("Pet " .. info.ID .. " co value = " .. tostring(val1)) end
 
-            local val1 = findValueByFields("Pet", info.ID, info.PT, info.SH, nil)
-            if val1 then warn("Pet " .. info.ID .. " co value = " .. tostring(val1)) end
+        -- Xử lý giáขาย
+        local valFinal = val1
+        local priceRaw = item.Price
+        local Min_sell = item.Min_sell
+        local Max_sell = item.Max_sell
 
-            local valFinal = val1
-            local priceRaw = item.Price
-            local Min_sell = item.Min_sell
-            local Max_sell = item.Max_sell
-
-            if type(priceRaw) == "number" then
-                valFinal = priceRaw
-            elseif type(priceRaw) == "string" then
-                local percentMatch = priceRaw:match("^[+%-]?[%d%.]+%%$")
-                if percentMatch then
-                    local sign = priceRaw:sub(1, 1)
-                    local numberPart = tonumber(priceRaw:match("[%d%.]+"))
-                    if sign == "+" then
-                        valFinal = valFinal + (valFinal * numberPart / 100)
-                    else
-                        valFinal = valFinal - (valFinal * numberPart / 100)
-                    end
-                    valFinal = math.floor(valFinal)
+        if type(priceRaw) == "number" then
+            valFinal = priceRaw
+        elseif type(priceRaw) == "string" then
+            local percentMatch = priceRaw:match("^[+%-%d%.]+%%$")
+            if percentMatch then
+                local sign = priceRaw:sub(1,1)
+                local numberPart = tonumber(priceRaw:match("[%d%.]+"))
+                if sign == "+" then
+                    valFinal = valFinal + (valFinal * numberPart / 100)
                 else
-                    local converted = convertStringPriceToNumber(priceRaw)
-                    if converted then valFinal = converted end
+                    valFinal = valFinal - (valFinal * numberPart / 100)
                 end
+                valFinal = math.floor(valFinal)
+            else
+                local converted = convertStringPriceToNumber(priceRaw)
+                if converted then valFinal = converted end
             end
+        end
 
-            if Min_sell and Max_sell then
-                Min_sell = convertStringPriceToNumber(Min_sell)
-                Max_sell = convertStringPriceToNumber(Max_sell)
-                valFinal = math.max(valFinal, Min_sell)
-                valFinal = math.min(valFinal, Max_sell)
-            end
+        if Min_sell then
+            Min_sell = convertStringPriceToNumber(Min_sell)
+            if Min_sell > valFinal then valFinal = Min_sell end
+        end
+        if Max_sell then
+            Max_sell = convertStringPriceToNumber(Max_sell)
+            if Max_sell < valFinal then valFinal = Max_sell end
+        end
 
-            local ohString1 = tostring(info.UID)
-            local ohNumber2 = valFinal or 0
-            task.wait(1)
-            game:GetService("ReplicatedStorage").Network.Booths_CreateListing:InvokeServer(ohString1, ohNumber2, 1)
-            warn("📦 Da tao listing pet " .. info.ID .. " voi gia " .. tostring(ohNumber2))
-            task.wait(2)
+        local ohString1 = tostring(info.UID)
+        local ohNumber2 = valFinal or 0
+        local ohNumber3 = 1
+        task.wait(1)
+        game:GetService("ReplicatedStorage").Network.Booths_CreateListing:InvokeServer(
+            ohString1,
+            ohNumber2,
+            ohNumber3
+        )
+        warn("📤 Đã treo pet " .. info.ID .. " giá " .. tostring(ohNumber2))
+        task.wait(2)
 
-            count_listed += 1
-            Tong_item_da_treo_quay += 1
-
-            if Tong_item_da_treo_quay == 25 then
-                while true do
-                    local X_slot = kiemtra_quayconslottreo()
-                    if X_slot < 25 then
-                        Tong_item_da_treo_quay = X_slot
-                        break
-                    end
-                    task.wait(60)
+        count_listed += 1
+        Tong_item_da_treo_quay += 1
+        if Tong_item_da_treo_quay == 25 then
+            while true do
+                local X_slot = kiemtra_quayconslottreo()
+                warn("slot : " .. X_slot)
+                if X_slot < 25 then
+                    Tong_item_da_treo_quay = X_slot
+                    break
                 end
+                task.wait(60)
             end
         end
     end
