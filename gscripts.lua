@@ -1,5 +1,4 @@
 getgenv().GRANK_FIRST = true
-getgenv().GEVENT_FPS = 5
 getgenv().GMAX_MAIL_COST = "1m"
 
 getgenv().GDO_BLOCK_PARTY = true
