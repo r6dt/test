@@ -2,6 +2,7 @@ getgenv().GRANK_FIRST = true
 getgenv().GMAX_MAIL_COST = "1m"
 
 getgenv().GDO_BLOCK_PARTY = true
+getgenv().GBLOCK_PARTY_RAFFLE_ENTRIES = 5
 getgenv().GBLOCK_PARTY_STOP_REBIRTHING_ON_TITANIC = true
 getgenv().GBLOCK_PARTY_STOP_REBIRTHING_ON_MULTIPLIER = 25
 
