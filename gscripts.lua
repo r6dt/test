@@ -3,7 +3,8 @@ getgenv().GEVENT_FPS = 5
 getgenv().GMAX_MAIL_COST = "1m"
 
 getgenv().GDO_BLOCK_PARTY = true
-getgenv().GBLOCK_PARTY_STOP_REBIRTHING_ON_MULTIPLIER = 25 -- add & change this if you want, to disable put value above 100
+getgenv().GBLOCK_PARTY_STOP_REBIRTHING_ON_TITANIC = false
+getgenv().GBLOCK_PARTY_STOP_REBIRTHING_ON_MULTIPLIER = 100
 
 getgenv().GAUTO_UPGRADE_PETS = true
 getgenv().GLOOTBOXES = {"All"}
@@ -41,7 +42,7 @@ getgenv().GMAIL_ITEMS = {
     -- ["RB Hippomelon Ball"] = {Class = "Pet", Id = "Hippomelon Ball", MinAmount = 1, IsRainbow = true},
     ["Hype Egg 2"] = {Class = "Lootbox", Id = "Hype Egg 2", MinAmount = 1},
     ["All Huges"] = {Class = "Pet", Id = "All Huges", MinAmount = 1},
-    ["Send Diamonds"] = {Class = "Currency", Id = "Diamonds", KeepAmount = "5m", MinAmount = "1b"},
+    ["Send Diamonds"] = {Class = "Currency", Id = "Diamonds", KeepAmount = "5m", MinAmount = "50m"},
     ["Hype Egg 2"] = {Class = "Lootbox", Id = "Hype Egg 2", MinAmount = 1},
     ["Daycare egg 5"] = {Class = "Egg", Id = "Huge Machine Egg 5", MinAmount = 1},
     ["Secret pet1"] = {Class = "Pet", Id = "Rainbow Swirl", MinAmount = 1, AllVariants = true},
