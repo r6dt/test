@@ -2,15 +2,18 @@ getgenv().GRANK_FIRST = true
 getgenv().GEVENT_FPS = 5
 getgenv().GMAX_MAIL_COST = "1m"
 
+getgenv().GDO_BLOCK_PARTY = true
+getgenv().GBLOCK_PARTY_STOP_REBIRTHING_ON_MULTIPLIER = 25 -- add & change this if you want, to disable put value above 100
+
 getgenv().GAUTO_UPGRADE_PETS = true
 getgenv().GLOOTBOXES = {"All"}
 getgenv().GCLEAR_FAVORITE_PETS = true
 getgenv().GPROGRESS_MODE = "Hybrid"
 getgenv().GGFX_MODE = 1
-getgenv().GRANK_TO = 20
+getgenv().GRANK_TO = 11
 getgenv().GZONE_TO = 999
 getgenv().GHATCH_SPEED_MS = 0
-getgenv().GWAIT_AT_GATES_TILL_RANK = 8
+getgenv().GWAIT_AT_GATES_TILL_RANK = 11
 
 getgenv().GMAX_ZONE_UPGRADE_COST = 200000
 getgenv().GUSE_ULTIMATES = {"Tsunami", "Tornado", "Pet Surge", "Chest Spell","Ground Pound"}
