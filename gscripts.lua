@@ -14,7 +14,7 @@ getgenv().GGFX_MODE = 1
 getgenv().GRANK_TO = 11
 getgenv().GZONE_TO = 999
 getgenv().GHATCH_SPEED_MS = 0
-getgenv().GWAIT_AT_GATES_TILL_RANK = 11
+getgenv().GWAIT_AT_GATES_TILL_RANK = 5
 
 getgenv().GMAX_ZONE_UPGRADE_COST = 200000
 getgenv().GUSE_ULTIMATES = {"Tsunami", "Tornado", "Pet Surge", "Chest Spell","Ground Pound"}
