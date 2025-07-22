@@ -12,10 +12,10 @@ getgenv().GLOOTBOXES = {"All"}
 getgenv().GCLEAR_FAVORITE_PETS = true
 getgenv().GPROGRESS_MODE = "Hybrid"
 getgenv().GGFX_MODE = 1
-getgenv().GRANK_TO = 11
+getgenv().GRANK_TO = 8
 getgenv().GZONE_TO = 999
 getgenv().GHATCH_SPEED_MS = 0
--- getgenv().GWAIT_AT_GATES_TILL_RANK = 5
+getgenv().GWAIT_AT_GATES_TILL_RANK = 8
 
 getgenv().GMAX_ZONE_UPGRADE_COST = 200000
 getgenv().GUSE_ULTIMATES = {"Tsunami", "Tornado", "Pet Surge", "Chest Spell","Ground Pound"}
