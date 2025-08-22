@@ -1,13 +1,13 @@
-getgenv().GRANK_FIRST = true
+spawn(function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Hoith95/Pet-99/main/Del-TopBarApp"))()
+end)
+
+spawn(function()
+wait(68)
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Hoith95/Pet-99/main/Event-TimeTrial-2"))()
+end)
+
 getgenv().GMAX_MAIL_COST = "1m"
-
-getgenv().GDO_BLOCK_PARTY = true
-getgenv().GBLOCK_PARTY_RAFFLE_ENTRIES = 5
-getgenv().GBLOCK_PARTY_STOP_REBIRTHING_ON_TITANIC = nil
-getgenv().GBLOCK_PARTY_STOP_REBIRTHING_ON_MULTIPLIER2 = nil
-getgenv().GBLOCK_PARTY_STOP_REBIRTHING_ON_TIER = 8
-getgenv().GBLOCK_PARTY_MAKE_TROPICAL_GIFTS = true
-
 getgenv().GAUTO_UPGRADE_PETS = true
 getgenv().GLOOTBOXES = {"All"}
 getgenv().GCLEAR_FAVORITE_PETS = true
