@@ -38,18 +38,4 @@ getgenv().GMASTERY_TO_MAX = "Pets"
 getgenv().GWEBHOOK_USERID = "" -- your discord userID, not your name. numerical id.
 -- Mail and Item Filtering
 getgenv().GHUGE_COUNT = 0
-getgenv().GMAIL_ITEMS = {
-    -- ["Normal Hippomelon Ball"] = {Class = "Pet", Id = "Hippomelon Ball", MinAmount = 1},
-    -- ["Golden Hippomelon Ball"] = {Class = "Pet", Id = "Hippomelon Ball", MinAmount = 1, IsGold = true},
-    -- ["RB Hippomelon Ball"] = {Class = "Pet", Id = "Hippomelon Ball", MinAmount = 1, IsRainbow = true},
-    ["Hype Egg 2"] = {Class = "Lootbox", Id = "Hype Egg 2", MinAmount = 1},
-    ["All Huges"] = {Class = "Pet", Id = "All Huges", MinAmount = 1},
-    ["Send Diamonds"] = {Class = "Currency", Id = "Diamonds", KeepAmount = "5m", MinAmount = "50m"},
-    ["Hype Egg 2"] = {Class = "Lootbox", Id = "Hype Egg 2", MinAmount = 1},
-    ["Daycare egg 5"] = {Class = "Egg", Id = "Huge Machine Egg 5", MinAmount = 1},
-    ["Secret pet1"] = {Class = "Pet", Id = "Rainbow Swirl", MinAmount = 1, AllVariants = true},
-    ["Secret pet2"] = {Class = "Pet", Id = "Banana", MinAmount = 1, AllVariants = true},
-    ["Secret pet3"] = {Class = "Pet", Id = "Coin", MinAmount = 1, AllVariants = true},
-    ["Secret pet4"] = {Class = "Pet", Id = "Yellow Lucky Block", MinAmount = 1, AllVariants = true},
-}
 loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/34915da4ad87a5028e1fd64efbe3543f.lua"))()
