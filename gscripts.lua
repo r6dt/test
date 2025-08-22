@@ -14,7 +14,7 @@ getgenv().GCLEAR_FAVORITE_PETS = true
 getgenv().GPROGRESS_MODE = "Hybrid"
 getgenv().GGFX_MODE = 1
 getgenv().GRANK_TO = 11
-getgenv().GZONE_TO = 999
+getgenv().GZONE_TO = 99
 getgenv().GHATCH_SPEED_MS = 0
 -- getgenv().GWAIT_AT_GATES_TILL_RANK = 5
 
