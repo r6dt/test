@@ -11,7 +11,7 @@ local function isNear(pos1, pos2, tol)
     return (pos1 - pos2).Magnitude <= tol
 end
 
--- Loop เช็คทุก 300 วิ
+-- Loop เช็คทุก 600 วิ
 while task.wait(600) do
     char = player.Character
     hrp = char and char:FindFirstChild("HumanoidRootPart")
