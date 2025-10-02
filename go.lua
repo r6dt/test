@@ -2793,16 +2793,12 @@ KillScript = function()
 	error("Killed Ro-Ghoul trainer.", 0);
 end
 
+-- ฟังก์ชัน luau ที่แก้ไขแล้ว
 local function luau()
-    if type(is_luau) == "function" then
-        return pcall(is_luau) and is_luau() or nil
-    elseif type(isluau) == "function" then
-        return pcall(isluau) and isluau() or nil
-    else
-        warn("No function was found to confirm luau.")
-        return nil
-    end
+    return true
 end
+
+
 
 local function readonly(table, boolean)
 	if make_writeable and not boolean then
