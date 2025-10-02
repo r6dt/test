@@ -2794,14 +2794,14 @@ KillScript = function()
 end
 
 local function luau()
-	if is_luau then
-		return is_luau();
-	else
-		return isluau();
-	end
-
-	warn("No function was found to confirm luau.")
-	return nil;
+    if type(is_luau) == "function" then
+        return pcall(is_luau) and is_luau() or nil
+    elseif type(isluau) == "function" then
+        return pcall(isluau) and isluau() or nil
+    else
+        warn("No function was found to confirm luau.")
+        return nil
+    end
 end
 
 local function readonly(table, boolean)
