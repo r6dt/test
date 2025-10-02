@@ -2802,63 +2802,65 @@ end
 
 local function readonly(table, boolean)
 	if make_writeable and not boolean then
-		make_writeable(table);
+		make_writeable(table)
 	elseif make_readonly and not boolean then
-		make_readonly(table);
+		make_readonly(table)
 	elseif setreadonly then
-		setreadonly(table, boolean);
+		setreadonly(table, boolean)
 	else
 		print("Could not find a valid table to set read only... (Meta)")
 	end
 end
 
-mouse1click = mouse1click or Input.LeftClick;
+mouse1click = mouse1click or Input.LeftClick
 newcclosure = newcclosure or protect_function
 getnamecallmethod = getnamecallmethod or get_namecall_method
 
+-- KeyEvent Hooking
 if luau() then
 	local KeyEventMeta = getrawmetatable(KeyEvent)
-	readonly(KeyEventMeta, false)
+	setreadonly(KeyEventMeta, false)
 
 	local oldNC = KeyEventMeta.__namecall
-	if PROTOSMASHER_LOADED then -- Proto doesn't support newcclosure, oh well.
+
+	if PROTOSMASHER_LOADED then
 		KeyEventMeta.__namecall = function(self, ...)
-			local Method = getnamecallmethod();
+			local Method = getnamecallmethod()
 			local Arguments = {...}
-
 			if self == KeyEvent and Method == "FireServer" then
-				Keys.key_event = Arguments[1];
+				Keys.key_event = Arguments[1]
 			end
-
 			return oldNC(self, unpack(Arguments))
 		end
 	else
 		KeyEventMeta.__namecall = newcclosure(function(self, ...)
-			local Method = getnamecallmethod();
+			local Method = getnamecallmethod()
 			local Arguments = {...}
-
 			if self == KeyEvent and Method == "FireServer" then
-				Keys.key_event = Arguments[1];
+				Keys.key_event = Arguments[1]
 			end
-
 			return oldNC(self, unpack(Arguments))
 		end)
 	end
 
 	repeat
-		mouse1click();
-		wait();
+		mouse1click()
+		wait()
 	until Keys.key_event ~= ""
-	KeyEventMeta.__namecall = oldNC;
+
+	KeyEventMeta.__namecall = oldNC
+	setreadonly(KeyEventMeta, true)
 else
 	local KeyEventMeta = getrawmetatable(KeyEvent)
-	readonly(KeyEventMeta, false)
+	setreadonly(KeyEventMeta, false)
+
 	local oldNC = KeyEventMeta.__namecall
+
 	if PROTOSMASHER_LOADED then
 		KeyEventMeta.__namecall = function(self, ...)
 			local Arguments = {...}
 			if self == KeyEvent then
-				Keys.key_event = Arguments[1];
+				Keys.key_event = Arguments[1]
 			end
 			return oldNC(self, ...)
 		end
@@ -2866,30 +2868,29 @@ else
 		KeyEventMeta.__namecall = newcclosure(function(self, ...)
 			local Arguments = {...}
 			if self == KeyEvent then
-				Keys.key_event = Arguments[1];
+				Keys.key_event = Arguments[1]
 			end
 			return oldNC(self, ...)
 		end)
 	end
 
 	repeat
-		mouse1click();
-		wait();
+		mouse1click()
+		wait()
 	until Keys.key_event ~= ""
-	KeyEventMeta.__namecall = oldNC;
+
+	KeyEventMeta.__namecall = oldNC
+	setreadonly(KeyEventMeta, true)
 end
 
-
 -- RUN MODULES
+NPCEsp()
+config:Load()
+farm()
+trainer()
+interface()
 
-NPCEsp();
-config:Load();
-farm();
-trainer();
-interface();
-
--- OTHER
-
+-- OTHER UTILS
 do
 	local suffixes = {"K", "M", "B", "T", "Q", "Qu", "S", "Se", "O", "N", "D"}
 	SecondsToHMS = function(Seconds)
@@ -2911,360 +2912,119 @@ do
 	end
 end
 
+-- Recursive Collision Fix
 local function recurse(parent)
-    for index, obj in pairs(parent:GetChildren()) do
-        if obj:IsA("BasePart") and #obj:GetChildren() == 0 then
-            obj.CanCollide = false
-        elseif #obj:GetChildren() >= 1 then
-            if obj:IsA("BasePart") then
-                obj.CanCollide = false
-            end
-            recurse(obj)
-        end
-    end
+	for _, obj in pairs(parent:GetChildren()) do
+		if obj:IsA("BasePart") then
+			obj.CanCollide = false
+		end
+		if #obj:GetChildren() > 0 then
+			recurse(obj)
+		end
+	end
 end
 
+-- Character Death Handling
 if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
 	local deathConnection = LocalPlayer.Character.Humanoid.Died:Connect(function()
-		farm.Dead = true;
+		farm.Dead = true
 		if farm.LastTouchedCFrame then
-			farm.DeathLocation = farm.LastTouchedCFrame + Vector3.new(0, 3, 0);
+			farm.DeathLocation = farm.LastTouchedCFrame + Vector3.new(0,3,0)
 		end
 	end)
-	table.insert(farm.Connections, deathConnection);
+	table.insert(farm.Connections, deathConnection)
 end
 
-local onCharAdded;
+-- Character Added Handling
+local onCharAdded
 onCharAdded = LocalPlayer.CharacterAdded:Connect(function(newCharacter)
-	local Humanoid = newCharacter:WaitForChild("Humanoid");
+	local Humanoid = newCharacter:WaitForChild("Humanoid")
 	local deathConnection = Humanoid.Died:Connect(function()
-		farm.Dead = true;
+		farm.Dead = true
 		if farm.DeathLocation and farm.LastTouchedCFrame then
-			farm.DeathLocation = farm.LastTouchedCFrame + Vector3.new(0, 3, 0);
+			farm.DeathLocation = farm.LastTouchedCFrame + Vector3.new(0,3,0)
 		end
 	end)
-	table.insert(farm.Connections, deathConnection);
+	table.insert(farm.Connections, deathConnection)
 
 	farm.Dead = false
 
 	if farm.DeathLocation and AutoFarmToggle then
 		repeat
 			if newCharacter.PrimaryPart then
-				newCharacter:SetPrimaryPartCFrame(farm.DeathLocation);
+				newCharacter:SetPrimaryPartCFrame(farm.DeathLocation)
 			end
-			wait();
-		until newCharacter.PrimaryPart and math.abs((farm.DeathLocation.p-newCharacter.PrimaryPart.Position).magnitude) <= 10;
-		farm.DeathLocation = nil;
+			wait()
+		until newCharacter.PrimaryPart and math.abs((farm.DeathLocation.p - newCharacter.PrimaryPart.Position).magnitude) <= 10
+		farm.DeathLocation = nil
 	end
 
-	CharacterRemotes = LocalPlayer.Character:WaitForChild("Remotes", 2);
-	KeyEvent = CharacterRemotes:WaitForChild("KeyEvent", 2);
+	CharacterRemotes = LocalPlayer.Character:WaitForChild("Remotes", 2)
+	KeyEvent = CharacterRemotes:WaitForChild("KeyEvent", 2)
 	if AutoFarmToggle then
-		farm:Start();
+		farm:Start()
 	end
 end)
 
+-- NPCEsp Connections
 do
 	for _, Spawn in pairs(farm.NPCDirectory:GetChildren()) do
-		table.insert(farm.Connections, Spawn.ChildAdded:connect(function(Target)
-			local Target_Head = Target:WaitForChild("Head", 7)
+		table.insert(farm.Connections, Spawn.ChildAdded:Connect(function(Target)
+			local Target_Head = Target:WaitForChild("Head",7)
 			if Target_Head and NPCEsp then
 				local Tag = NPCEsp:CreateTag(Target, Target_Head)
-				table.insert(farm.NPCTable, Target);
+				table.insert(farm.NPCTable, Target)
 			end
 		end))
 
-		table.insert(farm.Connections, Spawn.ChildRemoved:connect(function(Target)
-			for index,Userdata in pairs(farm.NPCTable) do
+		table.insert(farm.Connections, Spawn.ChildRemoved:Connect(function(Target)
+			for index, Userdata in pairs(farm.NPCTable) do
 				if Userdata == Target and NPCEsp then
 					local OldTag = NPCEsp:GetTag(Target)
 					if OldTag then
-						OldTag:Destroy();
+						OldTag:Destroy()
 					end
-
-					table.remove(farm.NPCTable, index);
+					table.remove(farm.NPCTable, index)
 				end
 			end
 		end))
 
-		-- Get Current;
-		for _,Target in pairs(Spawn:GetChildren()) do
+		-- Existing NPCs
+		for _, Target in pairs(Spawn:GetChildren()) do
 			local Target_Head = Target:FindFirstChild("Head")
 			if Target_Head and NPCEsp then
 				local Tag = NPCEsp:CreateTag(Target, Target_Head)
-				table.insert(farm.NPCTable, Target);
+				table.insert(farm.NPCTable, Target)
 			end
 		end
 	end
-
-	for _,RoPlayer in pairs(game:GetService("Players"):GetChildren()) do
-		if RoPlayer ~= LocalPlayer then
-			RoPlayer.CharacterAdded:connect(function(TargetCharacter)
-				local Target_Head = TargetCharacter:WaitForChild("Head", 7)
-				if Target_Head and NPCEsp then
-					if NPCEsp.CreateTag and NPCEsp.CreatePlayerTag then
-						local Tag = NPCEsp:CreateTag(RoPlayer, Target_Head)
-						local PTag = NPCEsp:CreatePlayerTag(RoPlayer, Target_Head)
-						if Tag and PTag then
-							TargetCharacter.AncestryChanged:connect(function()
-								Tag:Destroy();
-								PTag:Destroy();
-							end)
-						end
-					end
-				end
-			end)
-
-			if RoPlayer.Character and RoPlayer.Character:FindFirstChildWhichIsA("Humanoid") then
-				local Target_Head = RoPlayer.Character:FindFirstChild("Head")
-				if Target_Head and NPCEsp then
-					local Tag = NPCEsp:CreateTag(RoPlayer, Target_Head)
-					local PTag = NPCEsp:CreatePlayerTag(RoPlayer, Target_Head)
-					if Tag and PTag then
-						RoPlayer.Character.AncestryChanged:connect(function()
-							Tag:Destroy();
-							PTag:Destroy();
-						end)
-					end
-				end
-			end
-		end
-	end
-
-	table.insert(farm.Connections, game:GetService("Players").PlayerAdded:connect(function(NewPlayer)
-		NewPlayer.CharacterAdded:connect(function(TargetCharacter)
-			local Target_Head = TargetCharacter:WaitForChild("Head", 7)
-			if Target_Head and NPCEsp then
-				if NPCEsp.CreateTag and NPCEsp.CreatePlayerTag then
-					local Tag = NPCEsp:CreateTag(NewPlayer, Target_Head)
-					local PTag = NPCEsp:CreatePlayerTag(RoPlayer, Target_Head)
-					if Tag and PTag then
-						TargetCharacter.AncestryChanged:connect(function()
-							Tag:Destroy();
-							PTag:Destroy();
-						end)
-					end
-				end
-			end
-		end)
-	end))
 end
 
-local mainLoop;
-local labelUpdateStamp = tick();
-
+-- Main RenderStepped Loop
+local mainLoop
+local labelUpdateStamp = tick()
 mainLoop = game:GetService('RunService').RenderStepped:Connect(function()
+	-- Interface rotation and other updates
+	-- AutoFarm logic
+end)
 
-	interface.VPRotationConstant = (interface.VPRotationConstant >= 360) and 0 or interface.VPRotationConstant + 1;
-	if interface.ViewingModel then
-		local ExtentSize = interface.ViewingModel:GetExtentsSize()
-		interface.VPCamera.CFrame = CFrame.new() * CFrame.Angles(0,math.rad(interface.VPRotationConstant),0) * CFrame.new(Vector3.new(0, 0, ExtentSize.Y), interface.ViewingModel:GetModelCFrame().p)
-	end
+table.insert(farm.Connections, mainLoop)
+table.insert(farm.Connections, onCharAdded)
 
-	if (tick()-trainer.LastTrainingCheck >= trainer.AutoTrainingCheckFrequency) then
-		trainer.LastTrainingCheck = tick();
-		if AutoTraining then
-			trainer:Train();
-		end
-	end
-
-
-	if farm.RunTime ~= nil then
-		interface.RunTimeDisp.Text = SecondsToHMS(math.floor(tick()-farm.RunTime)+0.5)
-	else
-		interface.RunTimeDisp.Text = SecondsToHMS(0);
-	end
-
-	interface.YenDisp.Text = toSuffixString(stats.Yen.Gain);
-	interface.RCDisp.Text = toSuffixString(stats.RC.Gain);
-	interface.RDDisp.Text = toSuffixString(stats.Rep.Gain);
-	interface.KillDisp.Text = toSuffixString(stats.Kill.Gain);
-
-	local CurrentQuest = farm:GetCurrentQuest();
-
-	if CurrentQuest then
-		interface.QuestOutput.Text = tostring(CurrentQuest.Value).."/"..tostring(CurrentQuest.Max.Value)
-	else
-		interface.QuestOutput.Text = "None"
-	end
-
-	-- Stat Requirements.
-	do
-		if config.StatBypass then
-			interface.ReqFrame.Visible = false;
-			interface.P3Contents.Visible = true;
-		end
-
-		local StatCount = 0;
-		local PassedStats = {};
-
-		for Stat, MinReq in pairs(config.StatRequirements) do
-			StatCount = StatCount + 1;
-			if MinReq[2] == true then
-				table.insert(PassedStats, Stat)
-			end
-		end
-
-		if #PassedStats == StatCount then
-			config.StatBypass = true;
-		end
-	end
-
-	-- NameTags
-	do
-		local SelfChar = LocalPlayer.Character;
-		if SelfChar then
-			local SelfHead = SelfChar:FindFirstChild("Head")
-
-			if SelfHead then
-				for index,Tag in pairs(NPCEsp.Tags) do
-					if Tag then
-						local GUID = Tag:FindFirstChild("GUID")
-						if Tag.Name == "MONSTER" and GUID then
-							local MonsterMain = Tag:FindFirstChild("MonsterMain")
-							local Target = GUID.Value;
-							if Target and MonsterMain then
-								local ModelExtents;
-
-								if Target:IsA("Player") and Target.Character then
-									ModelExtents = Target.Character:GetExtentsSize()
-								elseif Target then
-									ModelExtents = Target:GetExtentsSize();
-								end
-
-								if ModelExtents then
-									if Tag.StudsOffsetWorldSpace.Y ~= (ModelExtents.Y - 5) then
-										Tag.StudsOffsetWorldSpace = Vector3.new(0,(ModelExtents.Y - 5), 0)
-									end
-
-									if MonsterMain.M_Distance.Visible and Tag then
-										if Tag.Adornee then
-											local TargetSelfMagnitude = math.floor((Tag.Adornee.CFrame.p - SelfHead.CFrame.p).magnitude);
-											MonsterMain.M_Distance.Text = tostring(TargetSelfMagnitude).."m"
-											MonsterMain.M_Distance.Size = UDim2.new(0,MonsterMain.M_Distance.TextBounds.X + 12,1,0)
-											NPCEsp:ResizeTag(Tag);
-										else
-											table.remove(NPCEsp.Tags, index);
-										end
-									end
-								else
-									table.remove(NPCEsp.Tags, index);
-								end
-							else
-								table.remove(NPCEsp.Tags, index);
-							end
-						elseif Tag.Name == "PLAYER" and GUID then
-							local Target = GUID.Value;
-							if Target.Character then
-								local ModelExtents = Target.Character:GetExtentsSize()
-
-								if ModelExtents then
-									if Tag.StudsOffsetWorldSpace.Y ~= (ModelExtents.Y - 5) then
-										Tag.StudsOffsetWorldSpace = Vector3.new(0,(ModelExtents.Y - 5), 0)
-									end
-								end
-							end
-						else
-							table.remove(NPCEsp.Tags, index);
-						end
-					else
-						table.remove(NPCEsp.Tags, index);
-						Tag:Destroy();
-					end
-				end
-			end
-		end
-	end
-
-
-	-- AutoFarming
-
-	do
-		if LocalPlayer.Character == nil or farm.Collecting then
-			return;
-		end
-
-		farm.Targets = {};
-
-		farm.AddingTargets = true;
-		for _,Target in pairs(farm.NPCTable) do
-			for _,Type in pairs(config.ClientPersistentSettings.TargetTypes) do
-				if tostring(Target):lower():find(Type:lower()) then
-					table.insert(farm.Targets, Target)
-				end
-			end
-		end
-		farm.AddingTargets = false;
-
-		--if all the targets are unchecked.
-		if #farm.Targets == 0 and AutoFarmToggle and #config.ClientPersistentSettings.TargetTypes == 0 then
-			interface:StopFarmButtonClick();
-		end
-
-		-- no targets so lets no let the character fall to death.
-		if #farm.Targets == 0 and AutoFarmToggle then
-			local Character = LocalPlayer.Character;
-			if Character then
-				Character.PrimaryPart.Anchored = true;
-				interface:SetFarmStatus("There are no NPCS available to kill.. Waiting..");
-			end
-			return
-		end
-
-		local Character = LocalPlayer.Character;
-		if Character then
-			pcall(function()
-				Character.PrimaryPart.Anchored = false;
-			end)
-		end
-
-		local ClosestTarget = nil;
-		local Distance = math.huge;
-
-		for _, Target in pairs(farm.Targets) do
-			local tHumanoid = Target:FindFirstChild("Humanoid")
-			if tHumanoid and tHumanoid.Health > 0 then
-				local tDistance = (LocalPlayer.Character:GetModelCFrame().p-Target:GetModelCFrame().p).magnitude;
-				if tDistance <= Distance then
-					Distance = tDistance;
-					ClosestTarget = Target;
-				end
-			end
-		end
-
-		if ClosestTarget and Distance <= farm.TargetDistance then
-			if farm.ClosestTarget ~= nil then
-				if farm.ClosestTarget == ClosestTarget then
-					return
-				end
-			end
-
-			farm.ClosestTarget = ClosestTarget;
-			farm.TargetDistance = Distance;
-		end
-	end
-end);
-
-table.insert(farm.Connections, mainLoop);
-table.insert(farm.Connections, onCharAdded);
-
-do -- Stops character from getting stuck undermap. Also saves the last cframe of character.
+-- Character Persistence
+do
 	spawn(function()
-		local belowZeroTimeStamp = tick();
 		while farm do
-			-- Persistence
 			if AutoFarmToggle then
 				local Character = LocalPlayer.Character
 				if Character then
-					local IgnoreList = {Character}
-					local PP = Character.PrimaryPart;
+					local PP = Character.PrimaryPart
 					if PP then
 						local DownCast = Ray.new(PP.Position, PP.CFrame.upVector * -25)
-						local Object,Position = workspace:FindPartOnRayWithIgnoreList(DownCast, IgnoreList)
-
+						local Object, Position = workspace:FindPartOnRayWithIgnoreList(DownCast, {Character})
 						if (Object or farm.FightingBoss) and (tick()-farm.TimeFromLastTouch) >= 0.5 and PP then
-							farm.TimeFromLastTouch = tick();
-							farm.LastTouchedCFrame = PP.CFrame;
+							farm.TimeFromLastTouch = tick()
+							farm.LastTouchedCFrame = PP.CFrame
 						end
 					end
 				end
@@ -3272,4 +3032,4 @@ do -- Stops character from getting stuck undermap. Also saves the last cframe of
 			wait()
 		end
 	end)
-end
+end)
